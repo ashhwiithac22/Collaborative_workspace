@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import { authAPI } from '../services/api';
 
 const Signup = ({ onNavigate }) => {
   const [formData, setFormData] = useState({
@@ -6,20 +7,47 @@ const Signup = ({ onNavigate }) => {
     email: '',
     password: '',
     confirmPassword: ''
-  })
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
-    })
+    });
+    setError('');
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // TODO: Implement signup logic
-    console.log('Signup attempt:', formData)
-    onNavigate('home') // Temporary navigation for UI testing
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    // Basic validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { confirmPassword: _confirmPassword, ...userData } = formData;
+      const response = await authAPI.register(userData);
+      const { token, user } = response.data;
+      
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      console.log('Registration successful:', user);
+      onNavigate('home');
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -27,6 +55,8 @@ const Signup = ({ onNavigate }) => {
       <div className="auth-card">
         <h2>Create Account</h2>
         <p>Get started with your free account</p>
+        
+        {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -38,6 +68,7 @@ const Signup = ({ onNavigate }) => {
               value={formData.name}
               onChange={handleChange}
               required
+              disabled={loading}
             />
           </div>
           
@@ -50,6 +81,7 @@ const Signup = ({ onNavigate }) => {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
             />
           </div>
           
@@ -62,6 +94,7 @@ const Signup = ({ onNavigate }) => {
               value={formData.password}
               onChange={handleChange}
               required
+              disabled={loading}
             />
           </div>
           
@@ -74,11 +107,16 @@ const Signup = ({ onNavigate }) => {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
+              disabled={loading}
             />
           </div>
           
-          <button type="submit" className="auth-button">
-            Create Account
+          <button 
+            type="submit" 
+            className="auth-button"
+            disabled={loading}
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
         
@@ -91,4 +129,4 @@ const Signup = ({ onNavigate }) => {
   )
 }
 
-export default Signup
+export default Signup;
