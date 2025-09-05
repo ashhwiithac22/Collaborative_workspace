@@ -1,33 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
-import { authAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
 import CreateProjectModal from '../components/CreateProjectModal';
 
-const Dashboard = ({ onNavigate }) => {
+const Dashboard = ({ onLogout }) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const fetchProjects = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        onNavigate('login');
+        navigate('/login');
         return;
       }
 
-      // Check if user is authenticated
-      await authAPI.getProfile();
-      
-      const projectsResponse = await fetch('http://localhost:5000/api/projects', {
+      const response = await fetch('http://localhost:5000/api/projects', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
-      if (projectsResponse.ok) {
-        const data = await projectsResponse.json();
+      if (response.ok) {
+        const data = await response.json();
         setProjects(data.projects);
       } else {
         throw new Error('Failed to fetch projects');
@@ -35,15 +33,14 @@ const Dashboard = ({ onNavigate }) => {
     } catch (error) {
       console.error('Error fetching projects:', error);
       setError('Failed to load projects');
-      // If token is invalid, redirect to login
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
-        onNavigate('login');
+        navigate('/login');
       }
     } finally {
       setLoading(false);
     }
-  }, [onNavigate]);
+  }, [navigate]);
 
   useEffect(() => {
     fetchProjects();
@@ -71,18 +68,15 @@ const Dashboard = ({ onNavigate }) => {
     } catch (error) {
       console.error('Error creating project:', error);
       setError('Failed to create project');
-      // If token is invalid, redirect to login
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
-        onNavigate('login');
+        navigate('/login');
       }
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    onNavigate('login');
+  const handleProjectSelect = (project) => {
+    navigate(`/project/${project._id}`);
   };
 
   if (loading) return <div className="loading">Loading projects...</div>;
@@ -95,7 +89,7 @@ const Dashboard = ({ onNavigate }) => {
           <button onClick={() => setShowCreateModal(true)} className="btn-primary">
             + New Project
           </button>
-          <button onClick={handleLogout} className="btn-secondary">
+          <button onClick={onLogout} className="btn-secondary">
             Logout
           </button>
         </div>
@@ -117,7 +111,7 @@ const Dashboard = ({ onNavigate }) => {
             <ProjectCard 
               key={project._id} 
               project={project} 
-              onSelect={(project) => console.log('Selected:', project)}
+              onSelect={handleProjectSelect}
             />
           ))
         )}

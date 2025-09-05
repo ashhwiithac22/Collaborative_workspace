@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { authAPI } from '../services/api';
 
-const Signup = ({ onNavigate }) => {
+const Signup = ({ onAuth }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -41,7 +41,7 @@ const Signup = ({ onNavigate }) => {
       localStorage.setItem('user', JSON.stringify(user));
       
       console.log('Registration successful:', user);
-      onNavigate('home');
+      onAuth(); // Notify parent component about authentication
     } catch (error) {
       console.error('Registration error:', error);
       setError(error.response?.data?.message || 'Registration failed. Please try again.');
@@ -122,7 +122,7 @@ const Signup = ({ onNavigate }) => {
         
         <p className="auth-link">
           Already have an account?{' '}
-          <span onClick={() => onNavigate('login')}>Sign in</span>
+          <span onClick={() => window.location.href = '/login'}>Sign in</span>
         </p>
       </div>
     </div>

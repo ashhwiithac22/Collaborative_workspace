@@ -1,41 +1,76 @@
-import { useState, useEffect } from 'react'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import Dashboard from './pages/Dashboard'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import ProjectEditor from './pages/ProjectEditor';
+import './App.css';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('login')
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const isAuth = !!token
-    setIsAuthenticated(isAuth)
-    if (isAuth) {
-      setCurrentPage('home')
-    }
-  }, [])
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+    setLoading(false);
+  }, []);
 
-  const handleNavigate = (page) => {
-    setCurrentPage(page)
-    if (page === 'logout') {
-      setIsAuthenticated(false)
-    } else if (page === 'home') {
-      setIsAuthenticated(true)
-    }
+  if (loading) {
+    return <div className="loading">Loading...</div>;
   }
 
-  // Optional: Use isAuthenticated for conditional rendering or other logic
-  console.log('User authenticated:', isAuthenticated)
-
   return (
-    <div className="app">
-      {currentPage === 'login' && <Login onNavigate={handleNavigate} />}
-      {currentPage === 'signup' && <Signup onNavigate={handleNavigate} />}
-      {currentPage === 'home' && <Dashboard onNavigate={handleNavigate} />}
-    </div>
-  )
+    <Router>
+      <div className="app">
+        <Routes>
+          {/* Public routes */}
+          <Route 
+            path="/login" 
+            element={
+              !isAuthenticated ? 
+                <Login onAuth={() => setIsAuthenticated(true)} /> : 
+                <Navigate to="/dashboard" replace />
+            } 
+          />
+          <Route 
+            path="/signup" 
+            element={
+              !isAuthenticated ? 
+                <Signup onAuth={() => setIsAuthenticated(true)} /> : 
+                <Navigate to="/dashboard" replace />
+            } 
+          />
+          
+          {/* Protected routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              isAuthenticated ? 
+                <Dashboard onLogout={() => setIsAuthenticated(false)} /> : 
+                <Navigate to="/login" replace />
+            } 
+          />
+         <Route 
+  path="/project/:projectId" 
+  element={
+    isAuthenticated ? 
+      <ProjectEditor /> : 
+      <Navigate to="/login" replace />
+  } 
+/>
+          
+          {/* Default redirect */}
+          <Route 
+            path="/" 
+            element={
+              <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+            } 
+          />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;

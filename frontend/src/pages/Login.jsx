@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { authAPI } from '../services/api';
 
-const Login = ({ onNavigate }) => {
+const Login = ({ onAuth }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -14,7 +14,7 @@ const Login = ({ onNavigate }) => {
       ...formData,
       [e.target.name]: e.target.value
     });
-    setError(''); // Clear error when user starts typing
+    setError('');
   }
 
   const handleSubmit = async (e) => {
@@ -31,7 +31,7 @@ const Login = ({ onNavigate }) => {
       localStorage.setItem('user', JSON.stringify(user));
       
       console.log('Login successful:', user);
-      onNavigate('home');
+      onAuth(); // Notify parent component about authentication
     } catch (error) {
       console.error('Login error:', error);
       setError(error.response?.data?.message || 'Login failed. Please try again.');
@@ -86,7 +86,7 @@ const Login = ({ onNavigate }) => {
         
         <p className="auth-link">
           Don't have an account?{' '}
-          <span onClick={() => onNavigate('signup')}>Sign up</span>
+          <span onClick={() => window.location.href = '/signup'}>Sign up</span>
         </p>
       </div>
     </div>
