@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
+const projectRoutes = require('./routes/projectRoutes');
 
 // Debug middleware - SIMPLIFIED VERSION
 app.use((req, res, next) => {
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
