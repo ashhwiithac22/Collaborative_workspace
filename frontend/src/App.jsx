@@ -11,16 +11,45 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check if token exists and is valid
     const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-    setLoading(false);
+    
+    if (token) {
+      // Verify token is valid by making a simple API call
+      fetch('http://localhost:5000/api/auth/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          setIsAuthenticated(true);
+        } else {
+          // Token is invalid, clear storage
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(error => {
+        console.error('Token validation error:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   if (loading) {
     return (
       <div className="app-loading">
         <div className="loading-spinner"></div>
-        <p>Loading...</p>
+        <p>Checking authentication...</p>
       </div>
     );
   }
@@ -29,7 +58,7 @@ function App() {
     <Router>
       <div className="app">
         <Routes>
-          {/* Public routes */}
+          {/* Public routes - only accessible when NOT authenticated */}
           <Route 
             path="/login" 
             element={
@@ -47,13 +76,27 @@ function App() {
             } 
           />
           
-          {/* Protected routes */}
+          {/* Protected routes - only accessible when authenticated */}
           <Route 
             path="/dashboard" 
             element={
               isAuthenticated ? 
-                <Dashboard onLogout={() => setIsAuthenticated(false)} /> : 
+                <Dashboard onLogout={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('user');
+                  setIsAuthenticated(false);
+                }} /> : 
                 <Navigate to="/login" replace />
+            } 
+          />
+
+          // In your App.jsx, make sure the Dashboard route looks like this:
+           <Route 
+           path="/dashboard" 
+           element={
+          isAuthenticated ? 
+          <Dashboard onLogout={() => setIsAuthenticated(false)} /> : 
+          <Navigate to="/login" replace />
             } 
           />
           <Route 
@@ -69,7 +112,9 @@ function App() {
           <Route 
             path="/" 
             element={
-              <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+              isAuthenticated ? 
+                <Navigate to="/dashboard" replace /> : 
+                <Navigate to="/login" replace />
             } 
           />
           

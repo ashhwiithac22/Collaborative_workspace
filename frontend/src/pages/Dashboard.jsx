@@ -37,6 +37,12 @@ const Dashboard = ({ onLogout }) => {
     } catch (error) {
       console.error('Error fetching projects:', error);
       setError('Failed to load projects');
+      if (error.response?.status === 401) {
+        // Token is invalid, redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }
@@ -135,6 +141,20 @@ const Dashboard = ({ onLogout }) => {
     navigate(`/project/${project._id}`);
   };
 
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Call the parent logout handler if provided
+    if (onLogout) {
+      onLogout();
+    }
+    
+    // Redirect to login page
+    navigate('/login');
+  };
+
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -158,7 +178,7 @@ const Dashboard = ({ onLogout }) => {
           >
             <span>+</span> New Project
           </button>
-          <button onClick={onLogout} className="btn-secondary">
+          <button onClick={handleLogout} className="btn-secondary">
             Logout
           </button>
         </div>
