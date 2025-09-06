@@ -4,7 +4,10 @@ const {
   getUserProjects, 
   getProject, 
   updateProject, 
-  deleteProject 
+  deleteProject,
+  executeCode,
+  updateFile,
+  manageCollaborators
 } = require('../controllers/projectController');
 const auth = require('../middleware/auth');
 
@@ -27,5 +30,10 @@ router.put('/:id', updateProject);
 
 // Delete project
 router.delete('/:id', deleteProject);
+
+// New routes for enhanced functionality
+router.post('/:projectId/execute', executeCode);
+router.put('/:projectId/files/:fileId', updateFile);
+router.post('/:projectId/collaborators', manageCollaborators);
 
 module.exports = router;

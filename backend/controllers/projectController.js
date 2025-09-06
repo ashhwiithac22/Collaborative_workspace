@@ -1,5 +1,5 @@
 const Project = require('../models/Project');
-
+const { executeCode } = require('../services/codeExecution'); // Add this import
 // Create a new project
 exports.createProject = async (req, res) => {
   try {
@@ -122,5 +122,119 @@ exports.deleteProject = async (req, res) => {
   } catch (error) {
     console.error('Delete project error:', error);
     res.status(500).json({ message: 'Server error deleting project' });
+  }
+};
+
+
+// Execute code
+exports.executeCode = async (req, res) => {
+  try {
+    const { code, language, stdin } = req.body;
+    const { projectId } = req.params;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Check access
+    if (!project.hasAccess(req.userId)) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const result = await executeCode(code, language, stdin);
+    res.json(result);
+  } catch (error) {
+    console.error('Code execution error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update file content
+exports.updateFile = async (req, res) => {
+  try {
+    const { projectId, fileId } = req.params;
+    const { content, language } = req.body;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Check edit permission
+    if (!project.canEdit(req.userId)) {
+      return res.status(403).json({ message: 'Read-only access' });
+    }
+
+    const file = project.files.id(fileId);
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    file.content = content;
+    if (language) file.language = language;
+    file.lastModified = new Date();
+    file.lastModifiedBy = req.userId;
+
+    await project.save();
+    
+    res.json({ message: 'File updated successfully', file });
+  } catch (error) {
+    console.error('Update file error:', error);
+    res.status(500).json({ message: 'Server error updating file' });
+  }
+};
+
+// Manage collaborators
+exports.manageCollaborators = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { action, email, role } = req.body;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // Only owner can manage collaborators
+    if (!project.owner.equals(req.userId)) {
+      return res.status(403).json({ message: 'Only owner can manage collaborators' });
+    }
+
+    let message;
+    switch (action) {
+      case 'add':
+        if (project.addCollaborator(null, email, role)) {
+          message = 'Collaborator invited successfully';
+        } else {
+          return res.status(400).json({ message: 'Collaborator already invited' });
+        }
+        break;
+      
+      case 'remove':
+        if (project.removeCollaborator(email)) {
+          message = 'Collaborator removed successfully';
+        } else {
+          return res.status(404).json({ message: 'Collaborator not found' });
+        }
+        break;
+      
+      case 'update-role':
+        if (project.updateCollaboratorRole(email, role)) {
+          message = 'Role updated successfully';
+        } else {
+          return res.status(404).json({ message: 'Collaborator not found' });
+        }
+        break;
+      
+      default:
+        return res.status(400).json({ message: 'Invalid action' });
+    }
+
+    await project.save();
+    res.json({ message });
+  } catch (error) {
+    console.error('Manage collaborators error:', error);
+    res.status(500).json({ message: 'Server error managing collaborators' });
   }
 };

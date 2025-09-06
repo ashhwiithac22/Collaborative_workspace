@@ -740,3 +740,379 @@ body {
 .justify-between { justify-content: space-between; }
 .gap-2 { gap: 0.5rem; }
 .gap-4 { gap: 1rem; }
+
+/* Enhanced Project Editor Styles */
+.project-editor {
+  min-height: 100vh;
+  background: #1e1e1e;
+  color: white;
+}
+
+.editor-header {
+  background: #2d2d2d;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.editor-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.editor-nav h1 {
+  color: white;
+  margin: 0;
+  flex: 1;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.role-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.role-badge.owner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.role-badge.editor {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.role-badge.viewer {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+.editor-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 0;
+  height: calc(100vh - 120px);
+}
+
+.editor-main {
+  background: #1e1e1e;
+  padding: 1rem;
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #252526;
+  border-radius: 8px;
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language-selector select {
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.editor-sidebar {
+  background: #252526;
+  padding: 1rem;
+  border-left: 1px solid #3d3d3d;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-section h3 {
+  color: #cccccc;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-section li {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.sidebar-section li:hover {
+  background: #2a2d2e;
+}
+
+.sidebar-section li.active {
+  background: #37373d;
+}
+
+.file-icon {
+  font-size: 16px;
+}
+
+.file-language {
+  margin-left: auto;
+  font-size: 11px;
+  color: #888;
+  background: #333;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
+.collaborator-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.collaborator-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #2a2d2e;
+  border-radius: 6px;
+}
+
+.collaborator-item.owner {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+}
+
+.user-avatar {
+  font-size: 1.2em;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info strong {
+  display: block;
+  font-size: 14px;
+}
+
+.user-info span {
+  font-size: 12px;
+  color: #888;
+}
+
+.role {
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.role.editor {
+  background: #2f855a;
+  color: white;
+}
+
+.role.viewer {
+  background: #dd6b20;
+  color: white;
+}
+
+.role.owner {
+  background: #6b46c1;
+  color: white;
+}
+
+/* Code Editor Styles */
+.code-editor-container {
+  height: 100%;
+}
+
+.editor-wrapper {
+  position: relative;
+  height: calc(100% - 60px);
+  border: 1px solid #3d3d3d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.read-only-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.read-only-message {
+  text-align: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 2px solid #e53e3e;
+}
+
+/* Modal Styles */
+.collaborator-modal, .executor-modal {
+  max-width: 600px;
+  max-height: 80vh;
+}
+
+.collaborator-form {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #2a2d2e;
+  border-radius: 8px;
+}
+
+.collaborator-form h3 {
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.current-collaborators {
+  margin-top: 2rem;
+}
+
+.collaborators-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.collaborator-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.role-select {
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  padding: 0.25rem;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.status.pending {
+  color: #ecc94b;
+  font-size: 11px;
+  font-style: italic;
+}
+
+/* Executor Styles */
+.executor-modal {
+  max-width: 800px;
+}
+
+.executor-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: end;
+}
+
+.run-btn {
+  white-space: nowrap;
+  padding: 0.75rem 1.5rem;
+}
+
+.executor-output {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #3d3d3d;
+}
+
+.executor-output h3 {
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.output-container {
+  background: #2d2d2d;
+  border-radius: 4px;
+  padding: 1rem;
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.success-output {
+  color: #68d391;
+}
+
+.error-output {
+  color: #fc8181;
+}
+
+.no-output {
+  color: #a0aec0;
+  font-style: italic;
+}
+
+.loading {
+  color: #ecc94b;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .editor-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .editor-sidebar {
+    border-left: none;
+    border-top: 1px solid #3d3d3d;
+  }
+}
+
+@media (max-width: 640px) {
+  .editor-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .editor-actions {
+    justify-content: center;
+  }
+  
+  .executor-controls {
+    grid-template-columns: 1fr;
+  }
+}
