@@ -1,15 +1,14 @@
 import { useState } from 'react';
 
-const CreateProjectModal = ({ isOpen, onClose, onCreate }) => {
+const InviteModal = ({ isOpen, onClose, project, onInvite }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    isPublic: false
+    email: '',
+    role: 'editor'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  if (!isOpen) return null;
+  if (!isOpen || !project) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,11 +16,11 @@ const CreateProjectModal = ({ isOpen, onClose, onCreate }) => {
     setError('');
 
     try {
-      await onCreate(formData);
-      setFormData({ name: '', description: '', isPublic: false });
+      await onInvite(project._id, formData.email, formData.role);
+      setFormData({ email: '', role: 'editor' });
       onClose();
     } catch (error) {
-      setError(error.message || 'Failed to create project');
+      setError(error.message || 'Failed to send invitation');
     } finally {
       setLoading(false);
     }
@@ -31,51 +30,40 @@ const CreateProjectModal = ({ isOpen, onClose, onCreate }) => {
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h2>Create New Project 🚀</h2>
+          <h2>Invite Collaborator 👥</h2>
           <button onClick={onClose} className="modal-close">×</button>
         </div>
         
         <div className="modal-body">
-          <p>Start a new coding project and invite collaborators</p>
+          <p>Invite someone to collaborate on <strong>"{project.name}"</strong></p>
           
           {error && <div className="error-message">{error}</div>}
           
           <form onSubmit={handleSubmit} className="invite-form">
             <div className="form-group">
-              <label htmlFor="name">Project Name</label>
+              <label htmlFor="email">Email Address</label>
               <input
-                type="text"
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                placeholder="Enter project name"
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                placeholder="Enter collaborator's email"
                 required
                 disabled={loading}
               />
             </div>
             
             <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                placeholder="Describe your project"
-                rows="3"
+              <label htmlFor="role">Role</label>
+              <select
+                id="role"
+                value={formData.role}
+                onChange={(e) => setFormData({...formData, role: e.target.value})}
                 disabled={loading}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={formData.isPublic}
-                  onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
-                  disabled={loading}
-                />
-                <span>Make this project public</span>
-              </label>
+              >
+                <option value="editor">Editor (can edit code)</option>
+                <option value="viewer">Viewer (read-only access)</option>
+              </select>
             </div>
             
             <div className="modal-actions">
@@ -95,10 +83,10 @@ const CreateProjectModal = ({ isOpen, onClose, onCreate }) => {
                 {loading ? (
                   <>
                     <div className="button-spinner"></div>
-                    Creating...
+                    Sending...
                   </>
                 ) : (
-                  'Create Project'
+                  'Send Invitation'
                 )}
               </button>
             </div>
@@ -109,4 +97,4 @@ const CreateProjectModal = ({ isOpen, onClose, onCreate }) => {
   );
 };
 
-export default CreateProjectModal;
+export default InviteModal;

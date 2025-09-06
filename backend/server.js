@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const projectRoutes = require('./routes/projectRoutes');
+const inviteRoutes = require('./routes/inviteRoutes');
 
 // Debug middleware - SIMPLIFIED VERSION
 app.use((req, res, next) => {
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 // Middleware
 app.use(cors());
 app.use(express.json()); // This parses JSON request bodies
+app.use('/api/invites', inviteRoutes);
 
 // Debug middleware after body parsing
 app.use((req, res, next) => {

@@ -26,12 +26,10 @@ const Login = ({ onAuth }) => {
       const response = await authAPI.login(formData);
       const { token, user } = response.data;
       
-      // Store token in localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
-      console.log('Login successful:', user);
-      onAuth(); // Notify parent component about authentication
+      onAuth();
     } catch (error) {
       console.error('Login error:', error);
       setError(error.response?.data?.message || 'Login failed. Please try again.');
@@ -43,14 +41,16 @@ const Login = ({ onAuth }) => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Welcome Back</h2>
-        <p>Sign in to your account</p>
+        <div className="auth-header">
+          <h2>Welcome Back 👋</h2>
+          <p>Sign in to your collaborative workspace</p>
+        </div>
         
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
               id="email"
@@ -59,6 +59,7 @@ const Login = ({ onAuth }) => {
               onChange={handleChange}
               required
               disabled={loading}
+              placeholder="Enter your email"
             />
           </div>
           
@@ -72,6 +73,7 @@ const Login = ({ onAuth }) => {
               onChange={handleChange}
               required
               disabled={loading}
+              placeholder="Enter your password"
             />
           </div>
           
@@ -80,14 +82,22 @@ const Login = ({ onAuth }) => {
             className="auth-button"
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? (
+              <>
+                <div className="button-spinner"></div>
+                Signing In...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
         
-        <p className="auth-link">
-          Don't have an account?{' '}
-          <span onClick={() => window.location.href = '/signup'}>Sign up</span>
-        </p>
+        <div className="auth-footer">
+          <p>Don't have an account?{' '}
+            <span onClick={() => window.location.href = '/signup'}>Sign up</span>
+          </p>
+        </div>
       </div>
     </div>
   )

@@ -17,7 +17,12 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="app-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -51,20 +56,34 @@ function App() {
                 <Navigate to="/login" replace />
             } 
           />
-         <Route 
-  path="/project/:projectId" 
-  element={
-    isAuthenticated ? 
-      <ProjectEditor /> : 
-      <Navigate to="/login" replace />
-  } 
-/>
+          <Route 
+            path="/project/:projectId" 
+            element={
+              isAuthenticated ? 
+                <ProjectEditor /> : 
+                <Navigate to="/login" replace />
+            } 
+          />
           
           {/* Default redirect */}
           <Route 
             path="/" 
             element={
               <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
+            } 
+          />
+          
+          {/* 404 page */}
+          <Route 
+            path="*" 
+            element={
+              <div className="not-found">
+                <h1>404 - Page Not Found</h1>
+                <p>The page you're looking for doesn't exist.</p>
+                <button onClick={() => window.location.href = '/'}>
+                  Go Home
+                </button>
+              </div>
             } 
           />
         </Routes>

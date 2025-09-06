@@ -24,7 +24,6 @@ const Signup = ({ onAuth }) => {
     setLoading(true);
     setError('');
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -36,12 +35,10 @@ const Signup = ({ onAuth }) => {
       const response = await authAPI.register(userData);
       const { token, user } = response.data;
       
-      // Store token in localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
-      console.log('Registration successful:', user);
-      onAuth(); // Notify parent component about authentication
+      onAuth();
     } catch (error) {
       console.error('Registration error:', error);
       setError(error.response?.data?.message || 'Registration failed. Please try again.');
@@ -53,8 +50,10 @@ const Signup = ({ onAuth }) => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Create Account</h2>
-        <p>Get started with your free account</p>
+        <div className="auth-header">
+          <h2>Create Account 🚀</h2>
+          <p>Join our collaborative coding platform</p>
+        </div>
         
         {error && <div className="error-message">{error}</div>}
         
@@ -69,11 +68,12 @@ const Signup = ({ onAuth }) => {
               onChange={handleChange}
               required
               disabled={loading}
+              placeholder="Enter your full name"
             />
           </div>
           
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
               id="email"
@@ -82,6 +82,7 @@ const Signup = ({ onAuth }) => {
               onChange={handleChange}
               required
               disabled={loading}
+              placeholder="Enter your email"
             />
           </div>
           
@@ -95,6 +96,7 @@ const Signup = ({ onAuth }) => {
               onChange={handleChange}
               required
               disabled={loading}
+              placeholder="Create a password"
             />
           </div>
           
@@ -108,6 +110,7 @@ const Signup = ({ onAuth }) => {
               onChange={handleChange}
               required
               disabled={loading}
+              placeholder="Confirm your password"
             />
           </div>
           
@@ -116,14 +119,22 @@ const Signup = ({ onAuth }) => {
             className="auth-button"
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? (
+              <>
+                <div className="button-spinner"></div>
+                Creating Account...
+              </>
+            ) : (
+              'Create Account'
+            )}
           </button>
         </form>
         
-        <p className="auth-link">
-          Already have an account?{' '}
-          <span onClick={() => window.location.href = '/login'}>Sign in</span>
-        </p>
+        <div className="auth-footer">
+          <p>Already have an account?{' '}
+            <span onClick={() => window.location.href = '/login'}>Sign in</span>
+          </p>
+        </div>
       </div>
     </div>
   )
